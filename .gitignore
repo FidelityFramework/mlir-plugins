@@ -1,0 +1,27 @@
+# Build artifacts
+build/
+cmake-build-*/
+_build/
+
+# Generated files
+*.h.inc
+*.cpp.inc
+
+# Compiled objects and libraries
+*.o
+*.so
+*.dylib
+*.dll
+*.a
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+.cache/
+compile_commands.json
+
+# OS
+.DS_Store
+Thumbs.db

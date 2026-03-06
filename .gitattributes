@@ -1,0 +1,24 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# C/C++ source
+*.cpp text diff=cpp
+*.h text diff=cpp
+*.cc text diff=cpp
+
+# TableGen
+*.td text
+
+# CMake
+CMakeLists.txt text
+*.cmake text
+
+# Documentation
+*.md text diff=markdown
+
+# Test files
+*.mlir text
+
+# Generated — do not diff
+*.h.inc linguist-generated
+*.cpp.inc linguist-generated
