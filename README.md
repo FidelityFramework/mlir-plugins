@@ -9,6 +9,19 @@ Each plugin is a shared library loaded via `mlir-opt --load-pass-plugin=<plugin>
 | Plugin | Pass | Purpose |
 |---|---|---|
 | [flat-closure-lowering](flat-closure-lowering/) | `--resolve-closure-casts` | Resolve closure-related type casts during LLVM lowering |
+| [reconcile-ffi-externs](reconcile-ffi-externs/) | `--reconcile-ffi-externs` | Reconcile FFI extern declarations with MLIR infrastructure |
+
+### flat-closure-lowering
+
+Resolves closure-related type casts during LLVM lowering. The Fidelity compiler represents closures as flat structures containing captured values and a function pointer. During lowering to the LLVM dialect, type mismatches arise between the generic closure representation and the concrete function signatures. This pass resolves those casts so that `--reconcile-unrealized-casts` can complete cleanly.
+
+**Pass flag**: `--resolve-closure-casts`
+
+### reconcile-ffi-externs
+
+Reconciles FFI extern declarations with infrastructure declarations that MLIR's standard lowering passes generate internally. The Fidelity compiler emits FFI calls with a `ffi.` prefix (e.g., `@ffi.malloc`) to avoid symbol collisions with declarations that passes like `finalize-memref-to-llvm` create (e.g., `@malloc`). After standard lowering is complete, this pass strips the `ffi.` prefix from non-colliding declarations and rewrites call sites for colliding declarations to use the infrastructure signature with explicit `ptrtoint`/`inttoptr` casts.
+
+**Pass flag**: `--reconcile-ffi-externs`
 
 ## Building
 
@@ -19,12 +32,14 @@ cmake -B build -G Ninja
 cmake --build build
 ```
 
-The built plugins are placed in `build/flat-closure-lowering/`.
+The built plugins are placed in `build/<plugin-name>/`.
 
 ## Usage
 
 ```sh
 mlir-opt input.mlir \
+  --load-pass-plugin=build/reconcile-ffi-externs/reconcile-ffi-externs.so \
+  --reconcile-ffi-externs \
   --load-pass-plugin=build/flat-closure-lowering/flat-closure-lowering.so \
   --resolve-closure-casts
 ```
